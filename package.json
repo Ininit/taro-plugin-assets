@@ -1,12 +1,17 @@
 {
   "name": "taro-plugin-assets",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "license": "MIT",
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc -b"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ininit/taro-plugin-assets.git"
+  },
+  "homepage": "https://github.com/Ininit/taro-plugin-assets#readme",
   "dependencies": {
     "@tarojs/service": "^3.2.12",
     "cos-nodejs-sdk-v5": "^2.9.19",
