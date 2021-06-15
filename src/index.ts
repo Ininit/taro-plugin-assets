@@ -16,7 +16,7 @@ export interface AssetsPluginOpts {
 export default (ctx: IPluginContext, pluginOpts: AssetsPluginOpts) => {
   ctx.registerMethod(
     'onAssetsUpload',
-    ({ fileList }: { fileList: string[] }) => {
+    ({ fileList, assets }: { fileList: string[], assets: any }) => {
       const cos = new COS({
         SecretId: pluginOpts.COS.SecretId,
         SecretKey: pluginOpts.COS.SecretKey,
@@ -29,7 +29,8 @@ export default (ctx: IPluginContext, pluginOpts: AssetsPluginOpts) => {
               Region: pluginOpts.COS.Region,
               Key: key,
               ACL: 'public-read',
-              Body: fs.readFileSync(path.join(basePath, key)),
+              Body: assets[key]._value,
+              ContentLength: assets[key]._value.length
             },
             function (err, data) {
               if (!err) {
@@ -77,6 +78,6 @@ export default (ctx: IPluginContext, pluginOpts: AssetsPluginOpts) => {
     const fileList = Object.keys(assets).filter(
       (e) => e.indexOf(pluginOpts.assetsPath) !== -1,
     )
-    ctx.onAssetsUpload({ fileList })
+    ctx.onAssetsUpload({ fileList, assets })
   })
 }
