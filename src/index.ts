@@ -2,6 +2,7 @@ import { IPluginContext } from '@tarojs/service'
 import COS from 'cos-nodejs-sdk-v5'
 import fs from 'fs-extra'
 import path from 'path'
+import md5 from 'md5'
 
 export interface AssetsPluginOpts {
   assetsPath: string
@@ -44,16 +45,20 @@ export default (ctx: IPluginContext, pluginOpts: AssetsPluginOpts) => {
         })
       }
 
+      type AssetsType = {
+        [key: string]: string
+      }
+      
+      const filesMd5: AssetsType = Object.fromEntries(fileList.map(e => [e, md5(assets[e]._value)]))
+
       const basePath = path.resolve(process.cwd(), 'src')
-      const manifestPath = path.join(basePath, '.assetsCache')
+      const manifestPath = path.join(basePath, '.assetscache')
       let needUploadAssets: string[] = []
-      let tmp_assets: string[] = []
+      let tmp_assets: AssetsType = {}
       if (fs.existsSync(manifestPath)) {
-        const manifest: {
-          assets: string[]
-        } = fs.readJsonSync(manifestPath)
-        tmp_assets = manifest.assets
-        needUploadAssets = fileList.filter((file) => !tmp_assets.includes(file))
+        const manifest = fs.readJsonSync(manifestPath)
+        tmp_assets = manifest
+        needUploadAssets = fileList.filter((file) => manifest[file] !== filesMd5[file])
       } else {
         needUploadAssets = fileList
       }
@@ -63,14 +68,12 @@ export default (ctx: IPluginContext, pluginOpts: AssetsPluginOpts) => {
         .then((results) => {
           results.forEach((result) => {
             if (result.status === 'fulfilled') {
-              tmp_assets.push(result.value)
+              tmp_assets[result.value] = filesMd5[result.value]
             }
           })
         })
         .then(() => {
-          fs.writeJSONSync(manifestPath, {
-            assets: tmp_assets,
-          })
+          fs.writeJSONSync(manifestPath, tmp_assets, { spaces: 2 })
         })
     },
   )

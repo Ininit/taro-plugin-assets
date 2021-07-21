@@ -1,6 +1,6 @@
 {
   "name": "taro-plugin-assets",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/index.js",
   "license": "MIT",
   "scripts": {
@@ -16,9 +16,11 @@
     "@tarojs/service": "^3.2.12",
     "cos-nodejs-sdk-v5": "^2.9.19",
     "fs-extra": "^10.0.0",
+    "md5": "^2.3.0",
     "typescript": "^4.3.2"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11"
+    "@types/fs-extra": "^9.0.11",
+    "@types/md5": "^2.3.1"
   }
 }
